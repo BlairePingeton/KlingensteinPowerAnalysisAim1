@@ -1,0 +1,61 @@
+---
+title: "Power Analysis Aim 1 Klingenstein"
+author: "Blaire Pingeton, Ph.D."
+date: "2024-12-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+library(lavaan)
+library(simsem)
+
+bifactor_model <- '
+  g =~ NA*y1 + y2 + y3 + y4 + y5 + y6 + y7 + y8 + y9 + y10 +
+       y11 + y12 + y13 + y14 + y15 + y16 + y17 + y18 + y19 + y20 +
+       y21 + y22 + y23 + y24 + y25 + y26 + y27 + y28 + y29 + y30 +
+       y31 + y32 + y33 + y34 + y35 + y36 + y37 + y38 + y39 + y40 +
+       y41 + y42 + y43 + y44 + y45 + y46 + y47 + y48 + y49 + y50 +
+       y51 + y52 + y53 + y54 + y55 + y56 + y57 + y58 + y59 + y60 +
+       y61 + y62 + y63 + y64 + y65 + y66 + y67 + y68 + y69 + y70 + y71 + y72
+
+  s1 =~ NA*y1 + y2 + y3 + y4 + y5 + y6 + y7 + y8 #threat
+  s2 =~ NA*y9 + y10 + y11 + y12 + y13 + y14 + y15 + y16 #frustrativenonreward
+  s3 =~ NA*y17 + y18 + y19 + y20 + y21 + y22 + y23 + y24 + y25 + y26 + y27 + y28 + 
+        y29 + y30 + y31 + y32 + y33 + y34 + y35 + y36 + y37 + y38 #coping
+  s4 =~ NA*y39 + y40 + y41 + y42 + y43 + y44 #somatic
+  s5 =~ NA*y45 + y46 + y47 + y48 + y49 + y50 + y51 + y52 + y53 + y54 + y55 + y56 + y57 + y58 + y59 #sleep
+  s6 =~ NA*y60 + y61 + y62 + y63 + y64 + y65 #loss
+  s7 =~ NA*y66 + y67 + y68 + y69 + y70 + y71 + y72 #positiveaffect
+
+  g ~~ 1*g
+  s1 ~~ 1*s1
+  s2 ~~ 1*s2
+  s3 ~~ 1*s3
+  s4 ~~ 1*s4
+  s5 ~~ 1*s5
+  s6 ~~ 1*s6
+  s7 ~~ 1*s7
+
+  y1 ~~ 0*y2; y1 ~~ 0*y3; y1 ~~ 0*y4; # Extend this pattern across all observed variables
+  y2 ~~ 0*y3; y2 ~~ 0*y4; # Continue fixing residual covariances explicitly
+  y3 ~~ 0*y4; # (Manual extension across all pairs is required for clarity)
+  
+  y1 ~~ 1*y1; y2 ~~ 1*y2; y3 ~~ 1*y3; y4 ~~ 1*y4
+  y5 ~~ 1*y5; y6 ~~ 1*y6; y7 ~~ 1*y7; y8 ~~ 1*y8
+'
+
+set.seed(12345)
+simulated_data <- simulateData(bifactor_model, sample.nobs = 133, std.lv = TRUE)
+
+fit <- cfa(bifactor_model, data = simulated_data, std.lv = TRUE, estimator = "ML")
+
+summary(fit, fit.measures = TRUE, standardized = TRUE)
+
+```
+
